@@ -16,16 +16,20 @@ const ProductCard = ({ product }: ProductCardProps) => {
         return <span className="status-badge status-inactive l1">No disponible</span>
       case 'pending':
         // Handle pending status
-        return <span className="status-badge status-active l1">Disponible</span>
+        return <span className="status-badge status-active l1">Pendiente</span>
       default:
         return null
     }
   }
 
-  // Format price for display
-  const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}` // Missing currency and proper formatting
-  }
+  // Format price for Chilean Pesos
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP",
+    minimumFractionDigits: 0, 
+  }).format(price)
+}
 
   // Check stock availability
   const getStockStatus = (stock: number) => {
