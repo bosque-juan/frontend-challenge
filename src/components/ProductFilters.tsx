@@ -3,20 +3,24 @@ import './ProductFilters.css'
 
 interface ProductFiltersProps {
   selectedCategory: string
+  selectedSupplier: string
   searchQuery: string
   sortBy: string
   onCategoryChange: (category: string) => void
   onSearchChange: (search: string) => void
   onSortChange: (sort: string) => void
+  onSupplierChange: (supplier: string) => void
 }
 
 const ProductFilters = ({
   selectedCategory,
+  selectedSupplier,
   searchQuery,
   sortBy,
   onCategoryChange,
   onSearchChange,
-  onSortChange
+  onSortChange,
+  onSupplierChange
 }: ProductFiltersProps) => {
   return (
     <div className="product-filters">
@@ -79,11 +83,21 @@ const ProductFilters = ({
         <div className="filter-section">
           <h3 className="filter-title p1-medium">Proveedores</h3>
           <div className="supplier-list">
+          <button
+              className={`supplier-item ${selectedSupplier === 'all' ? 'active' : ''}`}
+              onClick={() => onSupplierChange('all')}
+            >
+              <span className="supplier-name l1">Todos</span>
+          </button>
             {suppliers.map(supplier => (
-              <div key={supplier.id} className="supplier-item">
+              <button
+                key={supplier.id}
+                className={`supplier-item ${selectedSupplier === supplier.name ? 'active' : ''}`}
+                onClick={() => onSupplierChange(supplier.id)}
+              >
                 <span className="supplier-name l1">{supplier.name}</span>
                 <span className="supplier-count l1">{supplier.products}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -93,3 +107,4 @@ const ProductFilters = ({
 }
 
 export default ProductFilters
+
