@@ -49,6 +49,19 @@ const ProductDetail = () => {
   // Validate product status
   const canAddToCart = product.status === 'active' && product.stock > 0
 
+  // Max-limit input controller
+  const handleQuantityChange = (value: number) => {
+  if (!product) return
+
+  if (value > product.stock) {
+    alert(`Has alcanzado la cantidad máxima disponible: ${product.stock}`)
+    setQuantity(product.stock) 
+    return
+  }
+  
+  setQuantity(Math.max(1, quantity)) 
+}
+
   return (
     <div className="product-detail-page">
       <div className="container">
@@ -170,9 +183,10 @@ const ProductDetail = () => {
                   <input 
                     type="number" 
                     value={quantity} 
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="quantity-input"
-                    min="1"
+                    onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
+                    className="quantity-input hidde-num-input-buttons"
+                    min={1}
+                    max={product.stock}
                   />
                   <button 
                     onClick={() => setQuantity(quantity + 1)}
@@ -192,7 +206,6 @@ const ProductDetail = () => {
                   <span className="material-icons">shopping_cart</span>
                   {canAddToCart ? 'Agregar al carrito' : 'No disponible'}
                 </button>
-                
                 <button 
                   className="btn btn-secondary cta1"
                   onClick={() => alert('Función de cotización por implementar')}
