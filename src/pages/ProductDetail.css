@@ -289,6 +289,19 @@
   outline: none;
 }
 
+/* Hide numeric input default buttons */
+/* Chrome, Edge, Safari */
+input.hidde-num-input-buttons::-webkit-inner-spin-button,
+input.hidde-num-input-buttons::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input.hidde-num-input-buttons {
+  -moz-appearance: textfield;
+}
+
 .action-buttons {
   display: flex;
   gap: 12px;
