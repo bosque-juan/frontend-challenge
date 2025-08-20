@@ -152,10 +152,10 @@ Sorpréndenos con mejoras que creas importantes:
    ⚠️ **IMPORTANTE:** Usa el formulario oficial arriba para enviar tu solución.
    
    **Información requerida:**
-   - 🔗 URL de tu repositorio GitHub (fork con tu solución)
-   - 🚀 URL de la aplicación desplegada (opcional)
-   - 👤 Tu nombre completo
-   - 📧 Tu email de contacto
+   - 🔗 URL de tu repositorio GitHub (fork con tu solución): https://github.com/bosque-juan/frontend-challenge
+   - 🚀 URL de la aplicación desplegada (opcional): https://frontend-challenge-git-main-juanchos85s-projects.vercel.app/
+   - 👤 Tu nombre completo Juan Bosque 
+   - 📧 Tu email de contacto juan_bosque@hotmail.com
 
 ---
 
