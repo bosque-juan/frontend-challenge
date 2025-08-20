@@ -149,6 +149,8 @@
   padding: 8px 12px;
   background: #f8fafc;
   border-radius: 6px;
+  border:none;
+  cursor: pointer;
 }
 
 .supplier-name {

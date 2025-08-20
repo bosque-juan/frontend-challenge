@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import ProductCard from '../components/ProductCard'
 import ProductFilters from '../components/ProductFilters'
-import { products as allProducts } from '../data/products'
+import { products as allProducts} from '../data/products'
 import { Product } from '../types/Product'
 import './ProductList.css'
 
@@ -10,9 +10,11 @@ const ProductList = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('name')
+  const [selectedSupplier, setSelectedSupplier] = useState<string>('all');
+
 
   // Filter and sort products based on criteria
-  const filterProducts = (category: string, search: string, sort: string) => {
+  const filterProducts = (category: string, search: string, sort: string, supplier: string) => {
     let filtered = [...allProducts]
 
     // Category filter
@@ -20,11 +22,20 @@ const ProductList = () => {
       filtered = filtered.filter(product => product.category === category)
     }
 
+    //Supplier filter
+    
+    if (supplier !== 'all') {
+      filtered = filtered.filter(p => {
+       return p.supplier === supplier});
+  }
+
     // Search filter
     if (search) {
+
+      let NormalizedSearch = search.trim().toLowerCase();
       filtered = filtered.filter(product => 
-        product.name.includes(search) ||
-        product.sku.includes(search)
+        product.name.toLowerCase().includes(NormalizedSearch) ||
+        product.sku.toLowerCase().includes(NormalizedSearch)
       )
     }
 
@@ -35,6 +46,8 @@ const ProductList = () => {
         break
       case 'price':
         // Price sorting to implement
+        filtered.sort((a, b) => a.basePrice - b.basePrice)
+
         break
       case 'stock':
         filtered.sort((a, b) => b.stock - a.stock)
@@ -48,18 +61,30 @@ const ProductList = () => {
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category)
-    filterProducts(category, searchQuery, sortBy)
+    filterProducts(category, searchQuery, sortBy, selectedSupplier)
   }
 
   const handleSearchChange = (search: string) => {
     setSearchQuery(search)
-    filterProducts(selectedCategory, search, sortBy)
+    filterProducts(selectedCategory, search, sortBy, selectedSupplier)
   }
 
   const handleSortChange = (sort: string) => {
     setSortBy(sort)
-    filterProducts(selectedCategory, searchQuery, sort)
+    filterProducts(selectedCategory, searchQuery, sort, selectedSupplier)
   }
+
+  const handleSupplierChange = (supplier: string) => {
+    setSelectedSupplier(supplier)
+    filterProducts(selectedCategory, searchQuery, sortBy, supplier)
+  }
+
+// Real Categories amount
+const categoriesCount = new Set(
+  filteredProducts
+    .map(p => p.category)
+    .filter(c => c !== "all")
+).size;
 
   return (
     <div className="product-list-page">
@@ -79,7 +104,7 @@ const ProductList = () => {
               <span className="stat-label l1">productos</span>
             </div>
             <div className="stat-item">
-              <span className="stat-value p1-medium">6</span>
+              <span className="stat-value p1-medium">{categoriesCount}</span>
               <span className="stat-label l1">categorías</span>
             </div>
           </div>
@@ -88,8 +113,10 @@ const ProductList = () => {
         {/* Filters */}
         <ProductFilters
           selectedCategory={selectedCategory}
+          selectedSupplier={selectedSupplier}
           searchQuery={searchQuery}
           sortBy={sortBy}
+          onSupplierChange={handleSupplierChange}
           onCategoryChange={handleCategoryChange}
           onSearchChange={handleSearchChange}
           onSortChange={handleSortChange}
@@ -107,7 +134,7 @@ const ProductList = () => {
                 onClick={() => {
                   setSearchQuery('')
                   setSelectedCategory('all')
-                  filterProducts('all', '', sortBy)
+                  filterProducts('all', '', sortBy, selectedSupplier)
                 }}
               >
                 Ver todos los productos
@@ -127,3 +154,5 @@ const ProductList = () => {
 }
 
 export default ProductList
+
+
