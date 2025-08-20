@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Product } from '../types/Product'
 import './PricingCalculator.css'
 
@@ -8,45 +8,53 @@ interface PricingCalculatorProps {
 
 const PricingCalculator = ({ product }: PricingCalculatorProps) => {
   const [quantity, setQuantity] = useState<number>(1)
-  const [selectedBreak, setSelectedBreak] = useState<number>(0)
+  const [selectedBreak, setSelectedBreak] = useState<number | null>(null)
 
-  // Calculate best pricing for quantity
-  const calculatePrice = (qty: number) => {
-    if (!product.priceBreaks || product.priceBreaks.length === 0) {
-      return product.basePrice * qty
+  // Ordenar priceBreaks
+  const sortedPriceBreaks = [...(product.priceBreaks || [])].sort(
+    (a, b) => a.minQty - b.minQty
+  )
+
+  const calculatePrice = (qty: number, breakIndex?: number | null) => {
+    if (!sortedPriceBreaks.length) return product.basePrice * qty
+
+    if (breakIndex !== undefined && breakIndex !== null) {
+      return sortedPriceBreaks[breakIndex].price * qty
     }
 
-    // Find applicable price break
-    let applicableBreak = product.priceBreaks[0]
-    for (let i = 0; i < product.priceBreaks.length; i++) {
-      if (qty >= product.priceBreaks[i].minQty) {
-        applicableBreak = product.priceBreaks[i]
+    // Calcular automáticamente según cantidad
+    let applicableBreak = sortedPriceBreaks[0]
+    for (let i = 0; i < sortedPriceBreaks.length; i++) {
+      if (qty >= sortedPriceBreaks[i].minQty) {
+        applicableBreak = sortedPriceBreaks[i]
       }
     }
 
     return applicableBreak.price * qty
   }
 
-  // Calculate discount amount
-  const getDiscount = (qty: number) => {
-    if (!product.priceBreaks || product.priceBreaks.length === 0) {
-      return 0
-    }
-
+  const getDiscount = (qty: number, breakIndex?: number | null) => {
     const baseTotal = product.basePrice * qty
-    const discountedTotal = calculatePrice(qty)
-    
-    // Calculate savings percentage
+    const discountedTotal = calculatePrice(qty, breakIndex)
     return ((baseTotal - discountedTotal) / baseTotal) * 100
   }
 
-  // Format price display
-  const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}` // Should be CLP formatting
-  }
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 0,
+    }).format(price)
 
-  const currentPrice = calculatePrice(quantity)
-  const discountPercent = getDiscount(quantity)
+  const currentPrice = calculatePrice(quantity, selectedBreak)
+  const discountPercent = getDiscount(quantity, selectedBreak)
+
+  // Reset selectedBreak si la cantidad baja por debajo del mínimo del break
+  useEffect(() => {
+    if (selectedBreak !== null && quantity < sortedPriceBreaks[selectedBreak].minQty) {
+      setSelectedBreak(null)
+    }
+  }, [quantity, selectedBreak, sortedPriceBreaks])
 
   return (
     <div className="pricing-calculator">
